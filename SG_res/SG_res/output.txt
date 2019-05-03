@@ -1,0 +1,6 @@
+348107483
+348107483
+classic sg: 2440 msec
+efficient: 530 msec
+classic sg: 997 msec
+efficient: 239 msec
