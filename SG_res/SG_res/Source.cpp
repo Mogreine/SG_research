@@ -14,6 +14,7 @@
 #include <numeric>
 #include <string>
 #include <chrono>
+#include <set>
 
 using namespace std;
 
@@ -134,8 +135,10 @@ void modify(int p, int value) {  // set value at position p
 long long query(int l, int r) {  // sum on interval [l, r)
 	long long res = 0;
 	for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-		if (l & 1) res += tn[l++];
-		if (r & 1) res += tn[--r];
+		if (l & 1) 
+			res += tn[l++];
+		if (r & 1)
+			res += tn[--r];
 	}
 	return res;
 }
@@ -196,6 +199,56 @@ struct Operation {
 
 };
 
+pair<long long, long long> test_query(vector<Operation>& ops, int tests) {
+	vector<long long> times_cl(tests);
+	vector<long long> times_eff(tests);
+	vector<long long> sum_cl(tests);
+	vector<long long> sum_eff(tests);
+	for (int i = 0; i < tests; i++) {
+		auto timer = Clock();
+		timer.Start();
+		for (auto op : ops) {
+			auto val = query(1, 0, n, op.l, op.r);
+			sum_cl[i] = (sum_cl[i] + val) % 1000000007;
+		}
+		long long classic_time = timer.Stop();
+
+		timer.Start();
+		for (auto op : ops) {
+			auto val = query(op.l, op.r + 1);
+			sum_eff[i] = (sum_eff[i] + val) % 1000000007;
+		}
+		long long eff_time = timer.Stop();
+		times_cl[i] = classic_time;
+		times_eff[i] = eff_time;
+	}
+	long long min_cl = *min_element(times_cl.begin(), times_cl.end()),
+			  min_eff = *min_element(times_eff.begin(), times_eff.end());
+	return { min_cl, min_eff };
+}
+
+pair<long long, long long> test_update(vector<Operation>& ops, int tests) {
+	vector<long long> times_cl(tests);
+	vector<long long> times_eff(tests);
+	for (int i = 0; i < tests; i++) {
+		auto timer = Clock();
+		timer.Start();
+		for (auto op : ops) {
+			update(1, 0, n, op.l, op.r);
+		}
+		times_cl[i] = timer.Stop();
+
+		timer.Start();
+		for (auto op : ops) {
+			modify(op.l, op.r);
+		}
+		times_eff[i] = timer.Stop();
+	}
+	long long min_cl = *min_element(times_cl.begin(), times_cl.end()),
+		min_eff = *min_element(times_eff.begin(), times_eff.end());
+	return { min_cl, min_eff };
+}
+
 int main() {
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
@@ -210,7 +263,7 @@ int main() {
 	build();
 	init(base_arr, 1, 0, n - 1);
 
-	int q = 6e6;
+	int q = 5e6;
 	vector<Operation> ops(q);
 	for (int i = 0; i < q; i++) {
 		int type = rand() % 2,
@@ -222,38 +275,16 @@ int main() {
 	}
 
 	// Checking query
-	auto timer = Clock();
-	long long sum = 0;
-	timer.Start();
-	for (auto op : ops) {
-		auto val = query(1, 0, n, op.l, op.r);
-		sum = (sum + val) % 1000000007;
-	}
-	long long classic_time = timer.Stop();
-
-	long long sum2 = 0;
-	timer.Start();
-	for (auto op : ops) {
-		auto val = query(op.l, op.r + 1);
-		sum2 = (sum2 + val) % 1000000007;
-	}
-	long long eff_time = timer.Stop();
-	cout << sum << endl << sum2 << endl;
-	cout << "classic sg: " << classic_time << " msec" << endl
-	   	 << "efficient: " << eff_time << " msec" << endl;
+	auto q_time = test_query(ops, 10);
+	long long time_cl_query = q_time.first,
+			  time_eff_query = q_time.second;
+	cout << "classic sg: " << time_cl_query << " msec" << endl
+		<< "efficient: " << time_eff_query << " msec" << endl;
 
 	// Checking update
-	timer.Start();
-	for (auto op : ops) {
-		update(1, 0, n, op.l, op.r);
-	}
-	classic_time = timer.Stop();
-
-	timer.Start();
-	for (auto op : ops) {
-		modify(op.l, op.r);
-	}
-	eff_time = timer.Stop();
-	cout << "classic sg: " << classic_time << " msec" << endl
-		<< "efficient: " << eff_time << " msec" << endl;
+	auto upd_time = test_update(ops, 10);
+	long long time_cl_update = upd_time.first,
+			  time_eff_update = upd_time.second;
+	cout << "classic sg: " << time_cl_update << " msec" << endl
+		<< "efficient: " << time_eff_update << " msec" << endl;
 }
