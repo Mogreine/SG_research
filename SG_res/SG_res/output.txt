@@ -1,4 +1,7 @@
-classic sg: 1750 msec
-efficient: 413 msec
-classic sg: 756 msec
-efficient: 181 msec
+Sum
+classic sg: 1766 msec
+efficient: 553 msec
+
+Modification
+classic sg: 737 msec
+efficient: 183 msec

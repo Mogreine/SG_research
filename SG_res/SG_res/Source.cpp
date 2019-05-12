@@ -278,13 +278,13 @@ int main() {
 	auto q_time = test_query(ops, 10);
 	long long time_cl_query = q_time.first,
 			  time_eff_query = q_time.second;
-	cout << "classic sg: " << time_cl_query << " msec" << endl
-		<< "efficient: " << time_eff_query << " msec" << endl;
+	cout << "Sum\n" << "classic sg: " << time_cl_query << " msec" << endl
+		<< "efficient: " << time_eff_query << " msec" << endl << endl;
 
 	// Checking update
 	auto upd_time = test_update(ops, 10);
 	long long time_cl_update = upd_time.first,
 			  time_eff_update = upd_time.second;
-	cout << "classic sg: " << time_cl_update << " msec" << endl
+	cout << "Modification\n" << "classic sg: " << time_cl_update << " msec" << endl
 		<< "efficient: " << time_eff_update << " msec" << endl;
 }
