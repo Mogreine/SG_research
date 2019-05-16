@@ -27,4 +27,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Timers.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
